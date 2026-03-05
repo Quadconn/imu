@@ -107,7 +107,7 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg
 
 
 static void bmi088_delay_us(uint32_t period, void *intf_ptr) {
-    esp_rom_delay_us(period + 1000);
+    esp_rom_delay_us(period);
 }
 
 
