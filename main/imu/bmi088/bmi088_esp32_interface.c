@@ -1,10 +1,9 @@
 #include "bmi088_esp32_interface.h"
 
-#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "bmi088/bmi08_defs.h"
+#include "bmi08_defs.h"
 
 #include "driver/i2c_master.h"
 #include "esp_rom_sys.h"
@@ -68,8 +67,6 @@ int8_t bmi088_esp32_interface_init(struct bmi08_dev* bmi088) {
     bmi088->delay_us = bmi088_delay_us;
     bmi088->read_write_len = TX_BUFF_LEN_MAX;
 
-    printf("Interface initialized\n");
-
     return BMI08_OK;
 }
 
@@ -108,58 +105,5 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg
 
 static void bmi088_delay_us(uint32_t period, void *intf_ptr) {
     esp_rom_delay_us(period);
-}
-
-
-void bmi08_error_codes_print_result(const char api_name[], int8_t rslt)
-{
-    if (rslt != BMI08_OK)
-    {
-        printf("%s\t", api_name);
-        if (rslt == BMI08_E_NULL_PTR)
-        {
-            printf("Error [%d] : Null pointer\n", rslt);
-        }
-        else if (rslt == BMI08_E_COM_FAIL)
-        {
-            printf("Error [%d] : Communication failure\n", rslt);
-        }
-        else if (rslt == BMI08_E_DEV_NOT_FOUND)
-        {
-            printf("Error [%d] : Device not found\n", rslt);
-        }
-        else if (rslt == BMI08_E_OUT_OF_RANGE)
-        {
-            printf("Error [%d] : Out of Range\n", rslt);
-        }
-        else if (rslt == BMI08_E_INVALID_INPUT)
-        {
-            printf("Error [%d] : Invalid input\n", rslt);
-        }
-        else if (rslt == BMI08_E_CONFIG_STREAM_ERROR)
-        {
-            printf("Error [%d] : Config stream error\n", rslt);
-        }
-        else if (rslt == BMI08_E_RD_WR_LENGTH_INVALID)
-        {
-            printf("Error [%d] : Invalid Read write length\n", rslt);
-        }
-        else if (rslt == BMI08_E_INVALID_CONFIG)
-        {
-            printf("Error [%d] : Invalid config\n", rslt);
-        }
-        else if (rslt == BMI08_E_FEATURE_NOT_SUPPORTED)
-        {
-            printf("Error [%d] : Feature not supported\n", rslt);
-        }
-        else if (rslt == BMI08_W_FIFO_EMPTY)
-        {
-            printf("Warning [%d] : FIFO empty\n", rslt);
-        }
-        else
-        {
-            printf("Error [%d] : Unknown error code\n", rslt);
-        }
-    }
 }
 

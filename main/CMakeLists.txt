@@ -1,12 +1,16 @@
 idf_component_register(
     SRCS 
         "main.c"
-        "bmi088_esp32_interface.c"
-        "bmi088/bmi08a.c"
-        "bmi088/bmi08g.c"
-        "bmi088/bmi08xa.c"
+        "imu/imu.c"
+        "imu/bmi088/bmi088_esp32_interface.c"
+        "imu/bmi088/bmi088_utils.c"
+        "imu/bmi088/bosch/bmi08a.c"
+        "imu/bmi088/bosch/bmi08g.c"
+        "imu/bmi088/bosch/bmi08xa.c"
 
     INCLUDE_DIRS 
         "."
-        "bmi088"
+        "imu"
+        "imu/bmi088"
+        "imu/bmi088/bosch"
 )
