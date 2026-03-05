@@ -70,9 +70,18 @@ static int8_t init_bmi08(void)
 
     if (rslt == BMI08_OK)
     {
-        //printf("Uploading config file !\n");
-        //rslt = bmi08a_load_config_file(&bmi08dev);
-        //bmi08_error_codes_print_result("bmi08a_load_config_file", rslt);
+        // NOTE: This is needed or else loading the config file will fail
+        // Reset the accelerometer
+        rslt = bmi08a_soft_reset(&bmi08dev);
+        bmi08_error_codes_print_result("bmi08a_soft_reset", rslt);
+    }
+
+    if (rslt == BMI08_OK)
+    {
+
+        printf("Uploading config file !\n");
+        rslt = bmi08a_load_config_file(&bmi08dev);
+        bmi08_error_codes_print_result("bmi08a_load_config_file", rslt);
     }
 
     if (rslt == BMI08_OK)
@@ -213,7 +222,7 @@ void app_main(void) {
 
                 printf("Sample_Count, Acc_Raw_X, Acc_Raw_Y, Acc_Raw_Z, Acc_ms2_X, Acc_ms2_Y, Acc_ms2_Z\n");
 
-                while (times_to_read < 100)
+                while (times_to_read < 10)
                 {
                     rslt = bmi08a_get_data_int_status(&status, &bmi08dev);
                     bmi08_error_codes_print_result("bmi08a_get_data_int_status", rslt);
@@ -262,7 +271,7 @@ void app_main(void) {
 
                 printf("Sample_Count, Gyr_Raw_X, Gyr_Raw_Y, Gyr_Raw_Z, Gyr_DPS_X, Gyr_DPS_Y, Gyr_DPS_Z\n");
 
-                while (times_to_read < 100)
+                while (times_to_read < 10)
                 {
                     rslt = bmi08g_get_data_int_status(&status, &bmi08dev);
                     bmi08_error_codes_print_result("bmi08g_get_data_int_status", rslt);

@@ -11,7 +11,7 @@
 
 
 #define WAIT_FOREVER -1
-#define TX_BUFF_LEN_MAX 100
+#define TX_BUFF_LEN_MAX 32
 
 static i2c_master_bus_config_t i2c_mst_config = {
     .clk_source = I2C_CLK_SRC_DEFAULT,
@@ -66,7 +66,7 @@ int8_t bmi088_esp32_interface_init(struct bmi08_dev* bmi088) {
     bmi088->intf_ptr_accel = (void*)dev_handle_accel;
     bmi088->intf_ptr_gyro = (void*)dev_handle_gyro;
     bmi088->delay_us = bmi088_delay_us;
-    bmi088->read_write_len = TX_BUFF_LEN_MAX - 1;
+    bmi088->read_write_len = TX_BUFF_LEN_MAX;
 
     printf("Interface initialized\n");
 
@@ -89,7 +89,7 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_read(uint8_t reg_addr, uint8_t *reg_data,
 static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, 
                                      uint32_t len, void *intf_ptr) {
 
-    static uint8_t tx_buff[TX_BUFF_LEN_MAX] = {0};
+    static uint8_t tx_buff[TX_BUFF_LEN_MAX * 2] = {0};
 
     i2c_master_dev_handle_t dev_handle = (i2c_master_dev_handle_t)intf_ptr;
 
@@ -107,7 +107,7 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg
 
 
 static void bmi088_delay_us(uint32_t period, void *intf_ptr) {
-    esp_rom_delay_us(period);
+    esp_rom_delay_us(period + 1000);
 }
 
 
