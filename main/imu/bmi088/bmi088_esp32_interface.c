@@ -104,6 +104,8 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg
 
 
 static void bmi088_delay_us(uint32_t period, void *intf_ptr) {
+    // NOTE: May have to upgrade to actual timer if this is not good enough during
+    // testing.
     esp_rom_delay_us(period);
 }
 

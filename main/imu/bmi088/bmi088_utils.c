@@ -28,6 +28,8 @@ float lsb_to_dps(int16_t val, float dps, uint8_t bit_width) {
     return (dps / (half_scale)) * (val);
 }
 
+// TODO DR: Using since driver examples make a lot of usage of it but potentially
+// will adjust so printing doesn't happen directly in this module 
 void bmi08_error_codes_print_result(const char api_name[], int8_t rslt)
 {
     if (rslt != BMI08_OK)
