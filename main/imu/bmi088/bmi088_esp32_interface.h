@@ -6,7 +6,7 @@
 
 #include "bmi08_defs.h"
 
-int8_t bmi088_esp32_interface_init(struct bmi08_dev* bmi088);
+bool bmi088_esp32_interface_init(struct bmi08_dev* bmi088);
 void bmi08_error_codes_print_result(const char api_name[], int8_t rslt);
 
 #endif

@@ -1,6 +1,7 @@
 #include "bmi088_esp32_interface.h"
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include "bmi08_defs.h"
@@ -51,11 +52,23 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg
 static void bmi088_delay_us(uint32_t period, void *intf_ptr);
 
 
-int8_t bmi088_esp32_interface_init(struct bmi08_dev* bmi088) {
+bool bmi088_esp32_interface_init(struct bmi08_dev* bmi088) {
+    esp_err_t err;
     // I2C Init
-    ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_mst_config, &bus_handle));
-    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg_gyro, &dev_handle_gyro));
-    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg_accel, &dev_handle_accel));
+    err = i2c_new_master_bus(&i2c_mst_config, &bus_handle);
+    if (err != ESP_OK) {
+        return false;
+    }
+
+    err = i2c_master_bus_add_device(bus_handle, &dev_cfg_gyro, &dev_handle_gyro);
+    if (err != ESP_OK) {
+        return false;
+    }
+
+    err = i2c_master_bus_add_device(bus_handle, &dev_cfg_accel, &dev_handle_accel);
+    if (err != ESP_OK) {
+        return false;
+    }
 
     // BMI088 Init
     bmi088->intf = BMI08_I2C_INTF;
@@ -67,17 +80,22 @@ int8_t bmi088_esp32_interface_init(struct bmi08_dev* bmi088) {
     bmi088->delay_us = bmi088_delay_us;
     bmi088->read_write_len = TX_BUFF_LEN_MAX;
 
-    return BMI08_OK;
+    return true;
 }
 
 // NOTE: Using intf_ptr to select proper i2c device
 
 static BMI08_INTF_RET_TYPE bmi088_i2c_read(uint8_t reg_addr, uint8_t *reg_data, 
                                     uint32_t len, void *intf_ptr) {
+    esp_err_t err;
 
     i2c_master_dev_handle_t dev_handle = (i2c_master_dev_handle_t)intf_ptr;
 
-    ESP_ERROR_CHECK(i2c_master_transmit_receive(dev_handle, &reg_addr, sizeof(uint8_t), reg_data, len, WAIT_FOREVER));
+    err = i2c_master_transmit_receive(dev_handle, &reg_addr, sizeof(uint8_t), reg_data, len, WAIT_FOREVER);
+
+    if (err != ESP_OK) {
+        return !BMI08_INTF_RET_SUCCESS;
+    }
 
     return BMI08_INTF_RET_SUCCESS;
 }
@@ -86,18 +104,23 @@ static BMI08_INTF_RET_TYPE bmi088_i2c_read(uint8_t reg_addr, uint8_t *reg_data,
 static BMI08_INTF_RET_TYPE bmi088_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, 
                                      uint32_t len, void *intf_ptr) {
 
+    esp_err_t err;
     static uint8_t tx_buff[TX_BUFF_LEN_MAX * 2] = {0};
 
     i2c_master_dev_handle_t dev_handle = (i2c_master_dev_handle_t)intf_ptr;
 
     if (len > TX_BUFF_LEN_MAX) {
-        return 1;
+        return !BMI08_INTF_RET_SUCCESS;
     }
 
     tx_buff[0] = reg_addr;
     memcpy(&tx_buff[1], reg_data, len);
 
-    ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, tx_buff, len + 1, WAIT_FOREVER));
+    err = i2c_master_transmit(dev_handle, tx_buff, len + 1, WAIT_FOREVER);
+
+    if (err != ESP_OK) {
+        return !BMI08_INTF_RET_SUCCESS;
+    }
 
     return BMI08_INTF_RET_SUCCESS;
 }

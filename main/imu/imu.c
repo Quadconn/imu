@@ -35,14 +35,12 @@ static int8_t disable_bmi08_interrupt();
 bool imu_init() {
     int8_t rslt;
 
-    rslt = bmi088_esp32_interface_init(&bmi08dev);
-    bmi08_error_codes_print_result("bmi088_esp32_interface_init", rslt);
-
-
-    if (rslt == BMI08_OK) {
-        rslt = init_bmi08();
-        bmi08_error_codes_print_result("init_bmi08", rslt);
+    if (!bmi088_esp32_interface_init(&bmi08dev)) {
+        return false;
     }
+
+    rslt = init_bmi08();
+    bmi08_error_codes_print_result("init_bmi08", rslt);
 
     if (rslt == BMI08_OK) {
         /* Enable data ready interrupts */
