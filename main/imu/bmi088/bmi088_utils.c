@@ -20,12 +20,12 @@ float lsb_to_mps2(int16_t val, int8_t g_range, uint8_t bit_width) {
 }
 
 
-float lsb_to_dps(int16_t val, float dps, uint8_t bit_width) {
+float lsb_to_rps(int16_t val, float dps, uint8_t bit_width) {
     double power = 2;
 
     float half_scale = (float)((pow((double)power, (double)bit_width) / 2.0f));
 
-    return (dps / (half_scale)) * (val);
+    return ((dps / (half_scale)) * (val)) * (M_PI / 180.0f);
 }
 
 // TODO DR: Using since driver examples make a lot of usage of it but potentially

@@ -21,11 +21,14 @@ void quat_multiply(Quaternion* q_new, const Quaternion* q1, const Quaternion* q2
 }
 
 float quat_magnitude(const Quaternion* q) {
-    return sqrtf(powf(q->w, 2.0f) + powf(q->x, 2.0f) + powf(q->y, 2.0f) + powf(q->z, 2.0f));
+    return sqrtf((q->w * q->w) + (q->x * q->x) + (q->y * q->y) + (q->z * q->z));
 }
 
 void quat_normalize(Quaternion* q) {
     float magnitude = quat_magnitude(q);
+
+    // Division by zero protection
+    if (magnitude < 1E-6f) return;
 
     q->w /= magnitude; 
     q->x /= magnitude;
@@ -38,7 +41,7 @@ void quat_from_angle_axis(Quaternion* q_new, float angle, float x, float y, floa
     float half_angle = angle / 2.0f;
 
     // Normalize axis
-    float axis_magnitude = sqrtf(powf(x, 2.0f) + powf(y, 2.0f) + powf(z, 2.0f));
+    float axis_magnitude = sqrtf((x * x) + (y * y) + (z * z));
     x /= axis_magnitude;
     y /= axis_magnitude;
     z /= axis_magnitude;

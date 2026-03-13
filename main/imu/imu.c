@@ -109,7 +109,7 @@ bool imu_get_accel_sample(AccelerationMps2* out) {
 }
 
 
-bool imu_get_gyro_sample(AngularVelocityDps* out) {
+bool imu_get_gyro_sample(AngularVelocityRps* out) {
     int8_t rslt;
 
     if (bmi08dev.gyro_cfg.power != BMI08_GYRO_PM_NORMAL) {
@@ -119,9 +119,9 @@ bool imu_get_gyro_sample(AngularVelocityDps* out) {
     rslt = bmi08g_get_data(&bmi08_gyro, &bmi08dev);
     bmi08_error_codes_print_result("bmi08g_get_data", rslt);
 
-    out->x = lsb_to_dps(bmi08_gyro.x, 250.0f, 16);
-    out->y = lsb_to_dps(bmi08_gyro.y, 250.0f, 16);
-    out->z = lsb_to_dps(bmi08_gyro.z, 250.0f, 16);
+    out->x = lsb_to_rps(bmi08_gyro.x, 250.0f, 16);
+    out->y = lsb_to_rps(bmi08_gyro.y, 250.0f, 16);
+    out->z = lsb_to_rps(bmi08_gyro.z, 250.0f, 16);
 
     return (rslt == BMI08_OK);
 }

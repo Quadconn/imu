@@ -10,13 +10,13 @@
 #include "quaternion.h"
 
 float magnitude3f(float x, float y, float z) {
-    return sqrtf(powf(x, 2.0f) + powf(y, 2.0f) + powf(z, 2.0f));
+    return sqrtf((x * x) + (y * y) + (z * z));
 }
 
 void app_main(void) {
     uint32_t sample_count = 0;
     AccelerationMps2 accel = {0};
-    AngularVelocityDps ang_vel = {0};
+    AngularVelocityRps ang_vel = {0};
     Quaternion q = QUAT_IDENTITY;
     Quaternion q_delta;
 
