@@ -1,6 +1,7 @@
 idf_component_register(
     SRCS 
         "main.c"
+        "quaternion.c"
         "imu/imu.c"
         "imu/bmi088/bmi088_esp32_interface.c"
         "imu/bmi088/bmi088_utils.c"
