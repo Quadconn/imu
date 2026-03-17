@@ -13,6 +13,8 @@
 #define WAIT_FOREVER -1
 #define TX_BUFF_LEN_MAX 32
 
+#define I2C_SCL_HZ 100E3
+
 static i2c_master_bus_config_t i2c_mst_config = {
     .clk_source = I2C_CLK_SRC_DEFAULT,
     .i2c_port   = I2C_NUM_0,
@@ -29,7 +31,7 @@ static i2c_master_bus_handle_t bus_handle;
 static i2c_device_config_t dev_cfg_gyro = {
     .dev_addr_length = I2C_ADDR_BIT_LEN_7,
     .device_address  = BMI08_GYRO_I2C_ADDR_SECONDARY,
-    .scl_speed_hz    = 100E3,
+    .scl_speed_hz    = I2C_SCL_HZ,
 };
 
 i2c_master_dev_handle_t dev_handle_gyro;
@@ -37,7 +39,7 @@ i2c_master_dev_handle_t dev_handle_gyro;
 
 static i2c_device_config_t dev_cfg_accel = { .dev_addr_length = I2C_ADDR_BIT_LEN_7,
     .device_address  = BMI08_ACCEL_I2C_ADDR_SECONDARY,
-    .scl_speed_hz    = 100E3,
+    .scl_speed_hz    = I2C_SCL_HZ,
 };
 
 i2c_master_dev_handle_t dev_handle_accel;

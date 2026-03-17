@@ -55,3 +55,26 @@ void quat_from_angle_axis(Quaternion* q_new, float angle, float x, float y, floa
 
     quat_normalize(q_new);
 }
+
+void quat_to_euler(Euler* e, const Quaternion* q) {
+    e->roll = atan2f(2.0f * (q->w * q->x + q->y * q->z), 
+                     (q->w * q->w) - (q->x * q->x) - (q->y * q->y) + (q->z * q->z));
+
+    e->pitch = asinf(2.0f * (q->w * q->y - q->x * q->z));
+
+    e->yaw = atan2f(2 * (q->w * q->z + q->x * q->y), 
+                     (q->w * q->w) + (q->x * q->x) - (q->y * q->y) - (q->z * q->z));
+
+    // Avoid gimbal lock (when pitch = +/- pi/2 arguments to roll and pitch become 0 which 
+    // is undefined for atan2())
+
+    if (fabsf(e->pitch - ((float)M_PI / 2.0f)) <= 1E-3f) {
+        e->roll = 0.0f;
+        e->yaw = -2.0f * atan2f(q->x, q->w);
+
+    } else if (fabsf(e->pitch - ((float)-M_PI / 2.0f)) <= 1E-3f) {
+        e->roll = 0.0f;
+        e->yaw = 2.0f * atan2f(q->x, q->w);
+
+    }
+}

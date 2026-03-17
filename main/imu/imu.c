@@ -10,6 +10,12 @@
 #include "bmi088_utils.h"
 
 
+// NOTE: Adjust according to bmi configuration
+#define CONFIGURED_GYRO_DPS        250.0f
+#define CONFIGURED_ACCEL_G_RANGE   24
+#define CONFIGURED_BIT_WIDTH       16
+
+
 /*! @brief This structure containing relevant bmi08 info */
 static struct bmi08_dev bmi08dev;
 
@@ -33,13 +39,11 @@ static int8_t disable_bmi08_interrupt();
 
 
 bool imu_init() {
-    int8_t rslt;
-
     if (!bmi088_esp32_interface_init(&bmi08dev)) {
         return false;
     }
 
-    rslt = init_bmi08();
+    int8_t rslt = init_bmi08();
     bmi08_error_codes_print_result("init_bmi08", rslt);
 
     if (rslt == BMI08_OK) {
@@ -53,8 +57,7 @@ bool imu_init() {
 
 
 bool imu_deinit() {
-    int8_t rslt;
-    rslt = disable_bmi08_interrupt();
+    int8_t rslt = disable_bmi08_interrupt();
     bmi08_error_codes_print_result("disable_bmi08_interrupt", rslt);
 
     return (rslt == BMI08_OK); 
@@ -101,9 +104,9 @@ bool imu_get_accel_sample(AccelerationMps2* out) {
     rslt = bmi08a_get_data(&bmi08_accel, &bmi08dev);
     bmi08_error_codes_print_result("bmi08a_get_data", rslt);
 
-    out->x = lsb_to_mps2(bmi08_accel.x, 24, 16);
-    out->y = lsb_to_mps2(bmi08_accel.y, 24, 16);
-    out->z = lsb_to_mps2(bmi08_accel.z, 24, 16);
+    out->x = lsb_to_mps2(bmi08_accel.x, CONFIGURED_ACCEL_G_RANGE, CONFIGURED_BIT_WIDTH);
+    out->y = lsb_to_mps2(bmi08_accel.y, CONFIGURED_ACCEL_G_RANGE, CONFIGURED_BIT_WIDTH);
+    out->z = lsb_to_mps2(bmi08_accel.z, CONFIGURED_ACCEL_G_RANGE, CONFIGURED_BIT_WIDTH);
 
     return (rslt == BMI08_OK);
 }
@@ -119,9 +122,9 @@ bool imu_get_gyro_sample(AngularVelocityRps* out) {
     rslt = bmi08g_get_data(&bmi08_gyro, &bmi08dev);
     bmi08_error_codes_print_result("bmi08g_get_data", rslt);
 
-    out->x = lsb_to_rps(bmi08_gyro.x, 250.0f, 16);
-    out->y = lsb_to_rps(bmi08_gyro.y, 250.0f, 16);
-    out->z = lsb_to_rps(bmi08_gyro.z, 250.0f, 16);
+    out->x = lsb_to_rps(bmi08_gyro.x, CONFIGURED_GYRO_DPS, CONFIGURED_BIT_WIDTH);
+    out->y = lsb_to_rps(bmi08_gyro.y, CONFIGURED_GYRO_DPS, CONFIGURED_BIT_WIDTH);
+    out->z = lsb_to_rps(bmi08_gyro.z, CONFIGURED_GYRO_DPS, CONFIGURED_BIT_WIDTH);
 
     return (rslt == BMI08_OK);
 }
@@ -172,7 +175,10 @@ static int8_t init_bmi08(void)
 
         rslt = bmi08a_set_power_mode(&bmi08dev);
         bmi08_error_codes_print_result("bmi08a_set_power_mode", rslt);
+    }
 
+    if (rslt == BMI08_OK)
+    {
         rslt = bmi08xa_set_meas_conf(&bmi08dev);
         bmi08_error_codes_print_result("bmi08xa_set_meas_conf", rslt);
 
@@ -181,15 +187,19 @@ static int8_t init_bmi08(void)
         bmi08dev.gyro_cfg.bw = BMI08_GYRO_BW_230_ODR_2000_HZ;
         bmi08dev.gyro_cfg.power = BMI08_GYRO_PM_NORMAL;
 
+    if (rslt == BMI08_OK)
+    {
         rslt = bmi08g_set_power_mode(&bmi08dev);
         bmi08_error_codes_print_result("bmi08g_set_power_mode", rslt);
+    }
 
+    if (rslt == BMI08_OK)
+    {
         rslt = bmi08g_set_meas_conf(&bmi08dev);
         bmi08_error_codes_print_result("bmi08g_set_meas_conf", rslt);
     }
 
     return rslt;
-
 }
 
 static int8_t enable_bmi08_interrupt()

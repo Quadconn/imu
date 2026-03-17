@@ -10,6 +10,12 @@ typedef struct {
     float z;
 } Quaternion;
 
+typedef struct {
+    float roll;
+    float pitch;
+    float yaw;
+} Euler;
+
 void quat_multiply(Quaternion* q_new, const Quaternion* q1, const Quaternion* q2);
 
 float quat_magnitude(const Quaternion* q);
@@ -17,5 +23,7 @@ float quat_magnitude(const Quaternion* q);
 void quat_normalize(Quaternion* q);
 
 void quat_from_angle_axis(Quaternion* q_new, float angle, float x, float y, float z);
+
+void quat_to_euler(Euler* e, const Quaternion* q);
 
 #endif
